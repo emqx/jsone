@@ -286,3 +286,14 @@ decode_test_() ->
               ?assertMatch({ok, _, _}, jsone:try_decode(Input)),
               ?assertMatch({error, {badarg, _}}, jsone:try_decode(Input, [reject_invalid_utf8]))
       end}].
+
+int_key_test() ->
+    Dec = fun(Input) -> jsone:decode(iolist_to_binary(Input), [{allow_int_key, true}]) end,
+    ?assertEqual(#{<<"0">> => <<"a">>}, Dec("{0: \"a\"}")),
+    ?assertEqual(#{<<"0">> => <<"a">>}, Dec("{\"0\": \"a\"}")),
+    ?assertEqual(#{<<"10">> => 100}, Dec("{10 : 100}")),
+    ?assertEqual(#{<<"10">> => 100}, Dec("{\"10\" : 100}")),
+    ?assertEqual(#{<<"1">> => #{<<"10">> => 100}}, Dec("{1: {10 : 100}}")),
+    ?assertError(badarg, Dec("{12. : x}")),
+    ?assertError(badarg, Dec("{whatever : 1}")),
+    ok.

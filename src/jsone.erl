@@ -248,6 +248,7 @@
                          reject_invalid_utf8 |
                          {'keys', 'binary' | 'atom' | 'existing_atom' | 'attempt_atom'} |
                          {duplicate_map_keys, first | last} |
+                         {allow_int_key, boolean()} |
                          common_option().
 %% `object_format': <br />
 %% - Decoded JSON object format <br />
@@ -288,6 +289,8 @@
 %% - If the value is `last' then the last duplicate key/value is returned.
 %% - default: `first'<br />
 %%
+%% `allow_int_key': <br />
+%% Allows single-byte integer as key.
 
 -type stack_item() :: {Module :: module(),
                        Function :: atom(),
