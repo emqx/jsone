@@ -69,7 +69,8 @@
           reject_invalid_utf8 = false :: boolean(),
           keys = binary :: 'binary' | 'atom' | 'existing_atom' | 'attempt_atom',
           undefined_as_null = false :: boolean(),
-          duplicate_map_keys = first :: first | last
+          duplicate_map_keys = first :: first | last,
+          allow_int_key = false :: boolean()
          }).
 -define(OPT, #decode_opt_v2).
 -type opt() :: #decode_opt_v2{}.
@@ -179,6 +180,24 @@ object(<<Bin/binary>>, Nexts, Buf, Opt) ->
 -spec object_key(binary(), jsone:json_object_members(), [next()], binary(), opt()) -> decode_result().
 object_key(<<$", Bin/binary>>, Members, Nexts, Buf, Opt) ->
     string(Bin, byte_size(Buf), [{object_value, Members} | Nexts], Buf, Opt);
+object_key(Bin, Members, Nexts, Buf, ?OPT{allow_int_key = true} = Opt) ->
+    ParseIntKey =
+        try
+            [K0, Rest] = binary:split(Bin, <<":">>),
+            [K] = lists:filter(fun(I) -> I =/= <<>> end, binary:split(K0, <<" ">>)),
+            _ = binary_to_integer(K),
+            NewKey = <<$", K/binary, $", $:>>,
+            {ok, <<NewKey/binary, Rest/binary>>}
+        catch
+            _ : _ ->
+                ?ERROR(object_key, [Bin, Members, Nexts, Buf, Opt])
+        end,
+    case ParseIntKey of
+        {ok, NewBin} ->
+            object_key(NewBin, Members, Nexts, Buf, Opt);
+        Error ->
+            Error
+    end;
 object_key(<<Bin/binary>>, Members, Nexts, Buf, Opt) ->
     ?ERROR(object_key, [Bin, Members, Nexts, Buf, Opt]).
 
@@ -429,5 +448,7 @@ parse_option([undefined_as_null | T], Opt) ->
     parse_option(T, Opt?OPT{undefined_as_null = true});
 parse_option([{duplicate_map_keys, V} | T], Opt) when V =:= first; V =:= last ->
     parse_option(T, Opt?OPT{duplicate_map_keys = V});
+parse_option([{allow_int_key, V} | T], Opt) when V =:= true; V =:= false ->
+    parse_option(T, Opt?OPT{allow_int_key = V});
 parse_option(List, Opt) ->
     error(badarg, [List, Opt]).
