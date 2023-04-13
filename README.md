@@ -2,8 +2,7 @@ jsone
 =====
 
 [![hex.pm version](https://img.shields.io/hexpm/v/jsone.svg)](https://hex.pm/packages/jsone)
-[![Build Status](https://github.com/sile/jsone/workflows/build/badge.svg)](https://github.com/sile/jsone)
-[![Code Coverage](https://codecov.io/gh/sile/jsone/branch/master/graph/badge.svg)](https://codecov.io/gh/sile/jsone/branch/master)
+[![Build status](https://github.com/emqx/jsone/actions/workflows/ci.yml/badge.svg)](https://github.com/emqx/jsone/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 An Erlang library for encoding, decoding [JSON](http://json.org/index.html) data.

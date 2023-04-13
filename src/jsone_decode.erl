@@ -189,7 +189,7 @@ object_key(Bin, Members, Nexts, Buf, ?OPT{allow_int_key = true} = Opt) ->
             NewKey = <<$", K/binary, $", $:>>,
             {ok, <<NewKey/binary, Rest/binary>>}
         catch
-            _ : _ ->
+            _:_ ->
                 ?ERROR(object_key, [Bin, Members, Nexts, Buf, Opt])
         end,
     case ParseIntKey of
